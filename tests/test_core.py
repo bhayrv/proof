@@ -1,7 +1,10 @@
 """
-PROOF Protocol — Core Tests
+PROOF Protocol — Core Tests (updated for 0.2)
 
-These tests protect the fundamental invariants of PROOF 0.1.
+These tests protect the fundamental invariants of PROOF.
+
+Updated from 0.1 to reflect the immutable identity model:
+identity is derived from protocol version + claim + evidence only.
 """
 
 from proof.attestation import create_attestation, verify_attestation

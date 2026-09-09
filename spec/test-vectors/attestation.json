@@ -1,0 +1,55 @@
+{
+  "_description": "PROOF 0.2 — Attestation Conformance Vectors",
+  "_specification": "spec/PROOF.md §5",
+  "_purpose": "Independent implementations must produce identical signing payloads and verify signatures correctly.",
+  "_warning": "The private key in this file is for testing only. Never use all-zero keys in production.",
+  "vectors": [
+    {
+      "name": "valid_attestation",
+      "description": "A valid Ed25519 attestation over a claim with evidence.",
+      "private_key_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "public_key_hex": "3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29",
+      "identity_payload": {
+        "proof": "0.2",
+        "claim": {
+          "subject": "Acme",
+          "predicate": "raised",
+          "object": "USD 40 million"
+        },
+        "evidence": [
+          {
+            "type": "web",
+            "source": "https://example.invalid/funding"
+          }
+        ]
+      },
+      "signing_payload_hex": "7b22636c61696d223a7b226f626a656374223a22555344203430206d696c6c696f6e222c22707265646963617465223a22726169736564222c227375626a656374223a2241636d65227d2c2265766964656e6365223a5b7b22736f75726365223a2268747470733a2f2f6578616d706c652e696e76616c69642f66756e64696e67222c2274797065223a22776562227d5d2c2270726f6f66223a22302e32227d",
+      "proof_id": "sha256:f8ac750319bb1970fe1933c8752c05f5c0158834ea2165b62bea8d03b8bf3d6e",
+      "signature_hex": "0368e6ce777f30dc2d5111fdc03e4716a2576ce66e58e51b43963413dee4c5284ea0f959cd7ac150bbac87e42b3078e0478fc9c1a3e1308d46b7c0161ffe0502",
+      "expected_verification": true
+    },
+    {
+      "name": "tampered_claim",
+      "description": "A signature must fail verification if the claim is modified.",
+      "public_key_hex": "3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29",
+      "identity_payload": {
+        "proof": "0.2",
+        "claim": {
+          "subject": "Acme",
+          "predicate": "raised",
+          "object": "USD 50 million"
+        },
+        "evidence": [
+          {
+            "type": "web",
+            "source": "https://example.invalid/funding"
+          }
+        ]
+      },
+      "proof_id": "sha256:e84685338e14d318b9d288afc7f21bc0becedc3d64753c1041ba6c524db31c44",
+      "signature_hex": "0368e6ce777f30dc2d5111fdc03e4716a2576ce66e58e51b43963413dee4c5284ea0f959cd7ac150bbac87e42b3078e0478fc9c1a3e1308d46b7c0161ffe0502",
+      "expected_verification": false,
+      "failure_reason": "Signature was computed over different claim content."
+    }
+  ]
+}

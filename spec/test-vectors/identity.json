@@ -1,0 +1,82 @@
+{
+  "_description": "PROOF 0.2 — Identity Conformance Vectors",
+  "_specification": "spec/PROOF.md §4",
+  "_purpose": "Independent implementations must produce identical content identities for each identity payload.",
+  "vectors": [
+    {
+      "name": "minimal_claim",
+      "description": "A claim with no evidence produces a deterministic identity.",
+      "identity_payload": {
+        "proof": "0.2",
+        "claim": {
+          "subject": "Acme",
+          "predicate": "raised",
+          "object": "USD 40 million"
+        },
+        "evidence": []
+      },
+      "canonical_hex": "7b22636c61696d223a7b226f626a656374223a22555344203430206d696c6c696f6e222c22707265646963617465223a22726169736564222c227375626a656374223a2241636d65227d2c2265766964656e6365223a5b5d2c2270726f6f66223a22302e32227d",
+      "expected_identity": "sha256:823c7b8c57c0d96bd794a57a0a7e622f9b1c89cbdd7dae3bead83dd50b13cee8"
+    },
+    {
+      "name": "claim_with_minimal_evidence",
+      "description": "Adding evidence changes the identity.",
+      "identity_payload": {
+        "proof": "0.2",
+        "claim": {
+          "subject": "Acme",
+          "predicate": "raised",
+          "object": "USD 40 million"
+        },
+        "evidence": [
+          {
+            "type": "web",
+            "source": "https://example.invalid/funding"
+          }
+        ]
+      },
+      "canonical_hex": "7b22636c61696d223a7b226f626a656374223a22555344203430206d696c6c696f6e222c22707265646963617465223a22726169736564222c227375626a656374223a2241636d65227d2c2265766964656e6365223a5b7b22736f75726365223a2268747470733a2f2f6578616d706c652e696e76616c69642f66756e64696e67222c2274797065223a22776562227d5d2c2270726f6f66223a22302e32227d",
+      "expected_identity": "sha256:f8ac750319bb1970fe1933c8752c05f5c0158834ea2165b62bea8d03b8bf3d6e"
+    },
+    {
+      "name": "claim_with_full_evidence",
+      "description": "Evidence with optional fields produces a different identity.",
+      "identity_payload": {
+        "proof": "0.2",
+        "claim": {
+          "subject": "Acme",
+          "predicate": "raised",
+          "object": "USD 40 million"
+        },
+        "evidence": [
+          {
+            "type": "web",
+            "source": "https://example.com/acme-funding",
+            "title": "Acme funding announcement",
+            "observed_at": "2026-09-08T00:00:00Z"
+          }
+        ]
+      },
+      "canonical_hex": "7b22636c61696d223a7b226f626a656374223a22555344203430206d696c6c696f6e222c22707265646963617465223a22726169736564222c227375626a656374223a2241636d65227d2c2265766964656e6365223a5b7b226f627365727665645f6174223a22323032362d30392d30385430303a30303a30305a222c22736f75726365223a2268747470733a2f2f6578616d706c652e636f6d2f61636d652d66756e64696e67222c227469746c65223a2241636d652066756e64696e6720616e6e6f756e63656d656e74222c2274797065223a22776562227d5d2c2270726f6f66223a22302e32227d",
+      "expected_identity": "sha256:af581ae0e9053c6bc2ff4de328522d4d0a1f96d744e1996aa35440920a647590"
+    },
+    {
+      "name": "structured_object_value",
+      "description": "Structured JSON objects as claim values are supported.",
+      "identity_payload": {
+        "proof": "0.2",
+        "claim": {
+          "subject": "Acme",
+          "predicate": "reported",
+          "object": {
+            "revenue": 1000000,
+            "currency": "USD"
+          }
+        },
+        "evidence": []
+      },
+      "canonical_hex": "7b22636c61696d223a7b226f626a656374223a7b2263757272656e6379223a22555344222c22726576656e7565223a313030303030307d2c22707265646963617465223a227265706f72746564222c227375626a656374223a2241636d65227d2c2265766964656e6365223a5b5d2c2270726f6f66223a22302e32227d",
+      "expected_identity": "sha256:3e47aafb2ad176eae72b7944a5ac3b0ac69992c5edd3305328460a2f5d679739"
+    }
+  ]
+}

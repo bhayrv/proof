@@ -1,0 +1,13 @@
+{
+  "proof": "0.2",
+  "id": "sha256:823c7b8c57c0d96bd794a57a0a7e622f9b1c89cbdd7dae3bead83dd50b13cee8",
+  "claim": {
+    "subject": "Acme Corp",
+    "predicate": "raised",
+    "object": "USD 40 million"
+  },
+  "evidence": [],
+  "attestations": [],
+  "observed_at": "2026-09-08T12:00:00Z",
+  "status": "OBSERVED"
+}

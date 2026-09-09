@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://proof-protocol.org/schema/0.2/proof.json",
+  "title": "PROOF Record",
+  "description": "A PROOF 0.2 record containing a machine-readable claim with evidence, attestations, and lifecycle metadata.",
+  "type": "object",
+  "required": ["proof", "claim", "evidence", "status"],
+  "properties": {
+    "proof": {
+      "type": "string",
+      "const": "0.2",
+      "description": "Protocol version."
+    },
+    "id": {
+      "type": ["string", "null"],
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "Content-derived identity (SHA-256)."
+    },
+    "claim": {
+      "$ref": "#/$defs/claim"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "description": "Evidence records supporting the claim."
+    },
+    "attestations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/attestation"
+      },
+      "default": [],
+      "description": "Cryptographic attestations."
+    },
+    "observed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of first observation."
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "required": ["subject", "predicate", "object"],
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "The entity the claim is about."
+        },
+        "predicate": {
+          "type": "string",
+          "description": "The relationship or action being asserted."
+        },
+        "object": {
+          "description": "The value of the assertion. Any JSON-compatible value."
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["type", "source"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Category of evidence (e.g., web, document, api, dataset, proof)."
+        },
+        "source": {
+          "type": "string",
+          "description": "URI, identifier, or location of the evidence."
+        },
+        "title": {
+          "type": ["string", "null"],
+          "description": "Human-readable title."
+        },
+        "content_hash": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Content hash for integrity verification."
+        },
+        "observed_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of observation."
+        },
+        "metadata": {
+          "type": ["object", "null"],
+          "description": "Additional structured metadata."
+        }
+      },
+      "additionalProperties": true
+    },
+    "attestation": {
+      "type": "object",
+      "required": ["proof_id", "algorithm", "public_key", "signature"],
+      "properties": {
+        "proof_id": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "The PROOF identity being attested."
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": ["Ed25519"],
+          "description": "Signing algorithm identifier."
+        },
+        "public_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Hex-encoded raw public key bytes (32 bytes for Ed25519)."
+        },
+        "signature": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{128}$",
+          "description": "Hex-encoded raw signature bytes (64 bytes for Ed25519)."
+        },
+        "created_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of attestation creation."
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "OBSERVED",
+        "CORROBORATED",
+        "VERIFIED",
+        "CONTESTED",
+        "RETRACTED",
+        "SUPERSEDED"
+      ],
+      "description": "Lifecycle status of the PROOF record."
+    },
+    "relation": {
+      "type": "object",
+      "required": ["source_id", "target_id", "relation"],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "PROOF identity of the source record."
+        },
+        "target_id": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "PROOF identity of the target record."
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "supports",
+            "contradicts",
+            "supersedes",
+            "derived_from",
+            "corroborates"
+          ],
+          "description": "Relationship type."
+        },
+        "metadata": {
+          "type": ["object", "null"],
+          "description": "Additional relationship metadata."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

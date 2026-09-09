@@ -1,0 +1,144 @@
+{
+  "_description": "PROOF 0.2 — Canonicalization Conformance Vectors",
+  "_specification": "spec/PROOF.md §4.4",
+  "_purpose": "Independent implementations must produce identical canonical bytes (hex) and SHA-256 identity for each input.",
+  "vectors": [
+    {
+      "name": "key_ordering",
+      "description": "Object keys must be sorted lexicographically by Unicode code point.",
+      "input": {
+        "b": 2,
+        "a": 1
+      },
+      "canonical_hex": "7b2261223a312c2262223a327d",
+      "sha256": "sha256:43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777"
+    },
+    {
+      "name": "nested_objects",
+      "description": "Nested object keys must also be sorted.",
+      "input": {
+        "a": {
+          "z": 1,
+          "a": 2
+        }
+      },
+      "canonical_hex": "7b2261223a7b2261223a322c227a223a317d7d",
+      "sha256": "sha256:c82784b33f63c8f3022270f573269cf52eca7431f54e24ba95152d56ac29e6e8"
+    },
+    {
+      "name": "array_order_preserved",
+      "description": "Array element order must be preserved (not sorted).",
+      "input": [
+        3,
+        1,
+        2
+      ],
+      "canonical_hex": "5b332c312c325d",
+      "sha256": "sha256:51bda7ab4e44726cde71fcb6e4b515357059bb6b6dd5146d1fc50f73f11678c6"
+    },
+    {
+      "name": "booleans_and_null",
+      "description": "Booleans serialize as true/false, null as null (lowercase).",
+      "input": {
+        "a": true,
+        "b": false,
+        "c": null
+      },
+      "canonical_hex": "7b2261223a747275652c2262223a66616c73652c2263223a6e756c6c7d",
+      "sha256": "sha256:58ea9f23c715c4f8fee078efd41139485403f053775482d58b6f4f454b34ecf0"
+    },
+    {
+      "name": "unicode_preserved",
+      "description": "Non-ASCII characters are serialized directly as UTF-8, not escaped.",
+      "input": {
+        "accented": "café",
+        "emoji": "🔒"
+      },
+      "canonical_hex": "7b22616363656e746564223a22636166c3a9222c22656d6f6a69223a22f09f9492227d",
+      "sha256": "sha256:cb0045c0e88e6922b06f20153f7a7eb3011a451322dda8d41f4956a4c8ef0db9"
+    },
+    {
+      "name": "control_characters_escaped",
+      "description": "Control characters (newline, tab) are escaped as \\n, \\t.",
+      "input": {
+        "a": "line1\nline2\ttab"
+      },
+      "canonical_hex": "7b2261223a226c696e65315c6e6c696e65325c74746162227d",
+      "sha256": "sha256:2f52de6b6aa364e47627beb2bcabe8255eae077b4d331a4faf902684f5910440"
+    },
+    {
+      "name": "empty_object",
+      "description": "Empty object serializes as {}.",
+      "input": {},
+      "canonical_hex": "7b7d",
+      "sha256": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "name": "empty_array",
+      "description": "Empty array serializes as [].",
+      "input": [],
+      "canonical_hex": "5b5d",
+      "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "integer",
+      "description": "Integers serialize without quotes, decimal point, or exponent.",
+      "input": 42,
+      "canonical_hex": "3432",
+      "sha256": "sha256:73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049"
+    },
+    {
+      "name": "negative_integer",
+      "description": "Negative integers include a leading minus sign.",
+      "input": -9007199254740991,
+      "canonical_hex": "2d39303037313939323534373430393931",
+      "sha256": "sha256:4c933a456bb8f2e9894b2d0b26480439cd72d52fb8a27cbf8fd7f323f22c7815"
+    },
+    {
+      "name": "nested_arrays",
+      "description": "Nested arrays preserve structure and order.",
+      "input": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "canonical_hex": "5b5b312c325d2c5b332c345d5d",
+      "sha256": "sha256:03a4cc702aa6e4f169ff34dd055714141eae3d2d7c50f6f053150cc72ef12638"
+    },
+    {
+      "name": "string_escaping",
+      "description": "Double quotes inside strings are escaped.",
+      "input": "hello\"world",
+      "canonical_hex": "2268656c6c6f5c22776f726c6422",
+      "sha256": "sha256:ddaade584195e84e38bd9b1df770601d7cee534d50951bf6b0fecbc96d77b00f"
+    },
+    {
+      "name": "all_control_characters",
+      "description": "All control characters U+0000 to U+001F must be correctly escaped according to the profile.",
+      "input": {
+        "controls": "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f"
+      },
+      "canonical_hex": "7b22636f6e74726f6c73223a225c75303030305c75303030315c75303030325c75303030335c75303030345c75303030355c75303030365c75303030375c625c745c6e5c75303030625c665c725c75303030655c75303030665c75303031305c75303031315c75303031325c75303031335c75303031345c75303031355c75303031365c75303031375c75303031385c75303031395c75303031615c75303031625c75303031635c75303031645c75303031655c7530303166227d",
+      "sha256": "sha256:b76bb04fd866edab0a499d6a2f70286d42297ffaee2f7edb9aabd5e7d9ed65a3"
+    },
+    {
+      "name": "supplementary_unicode_ordering",
+      "description": "Object keys MUST be sorted lexicographically by Unicode scalar value. Tests supplementary characters above U+FFFF.",
+      "input": {
+        "𐀁": 2,
+        "𐀀": 1,
+        "a": 3,
+        "z": 4,
+        "💡": 5,
+        "💩": 6
+      },
+      "canonical_hex": "7b2261223a332c227a223a342c22f0908080223a312c22f0908081223a322c22f09f92a1223a352c22f09f92a9223a367d",
+      "sha256": "sha256:ecb79e65cd84457fa5e4e7e8f3294c41d2d70a625f2379c37204bf03061917bc"
+    }
+  ]
+}
