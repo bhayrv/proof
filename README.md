@@ -1,10 +1,15 @@
 # PROOF Protocol
 
-> Evidence should travel with information.
+<p align="center">
+  <img src="assets/proof-intro.png" alt="PROOF — Protocol for Readable Object Origin and Facts" width="100%">
+</p>
 
-PROOF is an open protocol for representing machine-readable claims
-together with their evidence, attestations, temporal context, and
-verification lifecycle.
+<p align="center">
+  <strong>Protocol for Readable Object Origin and Facts</strong><br>
+  An open protocol for machine-readable claims, evidence, attestations, temporal context, and verification lifecycle.
+</p>
+
+> Evidence should travel with information.
 
 PROOF does not decide what is true.
 
