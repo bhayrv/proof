@@ -21,22 +21,26 @@ occur between development versions.
 
 ## Why PROOF?
 
-Information moves extremely well across the internet.
+Information moves extremely well across the internet. Evidence does not.
 
-Evidence does not.
+A claim can be copied thousands of times while its original source, context, timestamp, and provenance disappear. PROOF is designed to keep those things connected. It is a neutral verification primitive for machine-readable knowledge.
 
-A claim can be copied thousands of times while its original source,
-context, timestamp, and provenance disappear.
+**WITHOUT PROOF:**
+> "Acme Corp raised $40 million."
 
-PROOF is designed to keep those things connected.
+This is just a string of text. A machine cannot verify it, know who said it, when it was said, or what evidence supports it.
+
+**WITH PROOF:**
+> `claim` + `evidence` + `observation time` + `attestation` + `status` + `relationships`
+
+A PROOF record packages the claim with its supporting evidence, cryptographic signatures from those who attest to it, and a traceable lifecycle. It represents exactly what was claimed, what evidence was associated with it, who attested to the exact immutable payload, and what supports or contradicts it.
 
 ## What PROOF Does NOT Claim
 
-- PROOF does not determine factual truth.
-- A cryptographic signature proves key control and data integrity —
-  not that the claim is true.
+- PROOF does not determine universal or factual truth.
+- A cryptographic signature proves key control and data integrity — not that the claim is true.
 - PROOF does not require blockchain, tokens, or centralized services.
-- PROOF is infrastructure, not an application.
+- PROOF is an open infrastructure protocol, not an application.
 
 ## Core Data Model
 
@@ -126,38 +130,52 @@ PROOF records can be connected via typed relationships:
 - `supersedes` — updated versions
 - `derived_from` — provenance chains
 
-## Installation
+## Quickstart
 
-```bash
-# Install from source
-git clone <repository-url>
-cd proof-protocol
-pip install -e ".[dev]"
-```
+A developer should be able to create, sign, and verify a record in minutes.
+
+### 1. Install
 
 Requires Python 3.11+.
 
-## CLI Usage
+```bash
+git clone https://github.com/bhayrv/proof.git
+cd proof
+python -m pip install .
+```
+*(For local development, use `python -m pip install -e ".[dev]" `)*
+
+### 2. Create a Claim
+
+Create a record connecting a claim to its evidence.
 
 ```bash
-# Create a PROOF record
 proof create --subject "Acme" --predicate "raised" --object "USD 40M" \
-  --evidence-type web --evidence-source "https://example.invalid/funding"
-
-# Compute identity from JSON stdin
-cat record.json | proof identity
-
-# Sign a PROOF record
-cat record.json | proof sign
-
-# Verify a PROOF record
-cat record.json | proof verify
-
-# Inspect a PROOF record
-cat record.json | proof inspect
+  --evidence-type web --evidence-source "https://example.invalid/funding" > record.json
 ```
 
-All commands support JSON input/output for pipeline compatibility.
+### 3. Inspect and Compute Identity
+
+Inspect the record and compute its immutable cryptographic identity.
+
+```bash
+cat record.json | proof inspect
+cat record.json | proof identity
+```
+
+### 4. Sign and Verify
+
+Generate an Ed25519 keypair, sign the record to attest to it, and verify the attestation.
+
+```bash
+proof keygen > keys.json
+# Extract the hex private key (using jq or similar), then sign:
+# (Assuming $PRIVATE_KEY contains the hex string from keys.json)
+cat record.json | proof sign --private-key $PRIVATE_KEY > signed_record.json
+cat signed_record.json | proof verify
+```
+
+All commands support JSON input/output for strict pipeline compatibility.
 
 ## Python API
 
@@ -189,12 +207,13 @@ print(result.to_dict())
 
 ## Examples
 
-See the `examples/` directory:
+See the `examples/` directory for compelling real-world demonstrations of PROOF:
 
-- `basic_claim.py` — Creating a PROOF record
-- `basic_claim.json` — Example record as JSON
-- `attestation.py` — Signing and verification
-- `contradiction.py` — Conflicting claims and graph relationships
+- `demo_financial_intelligence.py` — A financial data pipeline showing an earnings claim, multiple evidence attachments, an attestation, and a later contradictory claim (`contradicts` relation).
+- `demo_temporal_supersession.py` — Demonstrates an acquisition claim being revised (`supersedes` relation), showing how a machine can trace claim history and apply an explicit consumer policy to identify the currently preferred claim.
+- `demo_ai_agent_pipeline.py` — Simulates an AI extraction workflow: mock extraction → evidence association → review → attestation → deterministic verification, allowing downstream systems to verify the claimed provenance and attestation integrity without trusting the AI model itself.
+- `visualizer/index.html` — A lightweight, dependency-free HTML/JS visualizer to render a PROOF graph (claims, evidence, attestations, and relationships).
+- `cli_end_to_end.ps1` — A complete PowerShell script demonstrating the full CLI lifecycle.
 
 ## Development
 

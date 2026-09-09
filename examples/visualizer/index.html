@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROOF Protocol - Visual Graph Demo</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+            --claim-color: #1f6feb;
+            --evidence-color: #238636;
+            --supports-color: #2ea043;
+            --contradicts-color: #f85149;
+            --supersedes-color: #d29922;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        svg {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #161b22;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            max-width: 100%;
+        }
+
+        .node-rect {
+            rx: 6;
+            ry: 6;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .node-rect:hover {
+            filter: brightness(1.2);
+        }
+
+        .node-claim {
+            fill: rgba(31, 111, 235, 0.15);
+            stroke: var(--claim-color);
+        }
+
+        .node-evidence {
+            fill: rgba(35, 134, 54, 0.15);
+            stroke: var(--evidence-color);
+        }
+
+        .node-text {
+            font-size: 14px;
+            font-weight: 600;
+            fill: var(--text-primary);
+            pointer-events: none;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        
+        .node-subtext {
+            font-size: 11px;
+            fill: var(--text-secondary);
+            pointer-events: none;
+            text-anchor: middle;
+        }
+
+        .edge-line {
+            fill: none;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .edge-supports { stroke: var(--supports-color); }
+        .edge-contradicts { stroke: var(--contradicts-color); stroke-dasharray: 4; }
+        .edge-supersedes { stroke: var(--supersedes-color); }
+
+        .edge-label-rect {
+            fill: #161b22;
+            rx: 4;
+        }
+
+        .edge-label-text {
+            font-size: 12px;
+            font-weight: 500;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        
+        .text-supports { fill: var(--supports-color); }
+        .text-contradicts { fill: var(--contradicts-color); }
+        .text-supersedes { fill: var(--supersedes-color); }
+
+        /* Detail panel */
+        #panel {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #161b22;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 800px;
+            max-width: 100%;
+            display: none;
+        }
+        
+        #panel h3 { margin-top: 0; }
+        pre {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            color: #e6edf3;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>PROOF Protocol Graph</h1>
+    <p class="subtitle">This is not just signed JSON. It is a traceable graph of claims, evidence, attestations, and lifecycle changes. Click nodes to inspect.</p>
+
+    <svg width="800" height="500" viewBox="0 0 800 500">
+        <!-- Definitions for Arrowheads -->
+        <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#8b949e" />
+            </marker>
+        </defs>
+
+        <!-- Edges -->
+        <!-- Evidence A to Claim 1 -->
+        <path class="edge-line edge-supports" d="M 400 80 L 400 170" />
+        
+        <!-- Evidence B to Claim 1 -->
+        <path class="edge-line edge-supports" d="M 200 200 L 290 200" />
+        
+        <!-- Evidence C to Claim 1 -->
+        <path class="edge-line edge-supports" d="M 600 200 L 510 200" />
+        
+        <!-- Claim 2 to Claim 1 (Contradicts) -->
+        <path class="edge-line edge-contradicts" d="M 400 320 L 400 230" />
+        
+        <!-- Claim 3 to Claim 2 (Supersedes) -->
+        <path class="edge-line edge-supersedes" d="M 400 440 L 400 350" />
+
+        <!-- Edge Labels -->
+        <g transform="translate(400, 125)">
+            <rect class="edge-label-rect" x="-35" y="-10" width="70" height="20" />
+            <text class="edge-label-text text-supports">supports</text>
+        </g>
+        <g transform="translate(245, 200)">
+            <rect class="edge-label-rect" x="-35" y="-10" width="70" height="20" />
+            <text class="edge-label-text text-supports">supports</text>
+        </g>
+        <g transform="translate(555, 200)">
+            <rect class="edge-label-rect" x="-35" y="-10" width="70" height="20" />
+            <text class="edge-label-text text-supports">supports</text>
+        </g>
+        <g transform="translate(400, 275)">
+            <rect class="edge-label-rect" x="-45" y="-10" width="90" height="20" />
+            <text class="edge-label-text text-contradicts">contradicts</text>
+        </g>
+        <g transform="translate(400, 395)">
+            <rect class="edge-label-rect" x="-45" y="-10" width="90" height="20" />
+            <text class="edge-label-text text-supersedes">supersedes</text>
+        </g>
+
+        <!-- Nodes -->
+        <!-- Evidence A -->
+        <g class="node" transform="translate(400, 50)" onclick="showDetails('evidence_a')">
+            <rect class="node-rect node-evidence" x="-60" y="-30" width="120" height="60" />
+            <text class="node-text" y="-5">Evidence A</text>
+            <text class="node-subtext" y="15">Q3 Earnings PDF</text>
+        </g>
+
+        <!-- Evidence B -->
+        <g class="node" transform="translate(140, 200)" onclick="showDetails('evidence_b')">
+            <rect class="node-rect node-evidence" x="-60" y="-30" width="120" height="60" />
+            <text class="node-text" y="-5">Evidence B</text>
+            <text class="node-subtext" y="15">Press Release</text>
+        </g>
+
+        <!-- Evidence C -->
+        <g class="node" transform="translate(660, 200)" onclick="showDetails('evidence_c')">
+            <rect class="node-rect node-evidence" x="-60" y="-30" width="120" height="60" />
+            <text class="node-text" y="-5">Evidence C</text>
+            <text class="node-subtext" y="15">Auditor Log</text>
+        </g>
+
+        <!-- Claim 1 -->
+        <g class="node" transform="translate(400, 200)" onclick="showDetails('claim_1')">
+            <rect class="node-rect node-claim" x="-110" y="-30" width="220" height="60" />
+            <text class="node-text" y="-5">CLAIM 1 (CONTESTED)</text>
+            <text class="node-subtext" y="15">"Acme Corp reported $42M income"</text>
+        </g>
+
+        <!-- Claim 2 -->
+        <g class="node" transform="translate(400, 320)" onclick="showDetails('claim_2')">
+            <rect class="node-rect node-claim" x="-110" y="-30" width="220" height="60" />
+            <text class="node-text" y="-5">CLAIM 2 (SUPERSEDED)</text>
+            <text class="node-subtext" y="15">"Acme Corp reported $38M income"</text>
+        </g>
+        
+        <!-- Claim 3 -->
+        <g class="node" transform="translate(400, 440)" onclick="showDetails('claim_3')">
+            <rect class="node-rect node-claim" x="-110" y="-30" width="220" height="60" />
+            <text class="node-text" y="-5">CLAIM 3 (VERIFIED)</text>
+            <text class="node-subtext" y="15">"Acme Corp reported $38.5M income"</text>
+        </g>
+    </svg>
+
+    <div id="panel">
+        <h3 id="panel-title">Node Details</h3>
+        <p id="panel-desc" style="font-size: 14px; margin-bottom: 15px;"></p>
+        <pre id="panel-json"></pre>
+    </div>
+
+    <script>
+        const mockData = {
+            "evidence_a": {
+                title: "Evidence A (PDF)",
+                desc: "An external document that serves as evidence.",
+                json: {
+                    "type": "document",
+                    "source": "https://example.invalid/q3-earnings.pdf",
+                    "hash": "sha256:abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234"
+                }
+            },
+            "evidence_b": {
+                title: "Evidence B (Web)",
+                desc: "A public PR statement.",
+                json: {
+                    "type": "web",
+                    "source": "https://pr.example.invalid/acme-q3",
+                    "title": "Acme Q3 Results Announced"
+                }
+            },
+            "evidence_c": {
+                title: "Evidence C (Dataset)",
+                desc: "An auditor's machine-readable ledger extract.",
+                json: {
+                    "type": "dataset",
+                    "source": "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+                }
+            },
+            "claim_1": {
+                title: "CLAIM 1 (CONTESTED)",
+                desc: "The initial claim, heavily supported by evidence, but later contradicted.",
+                json: {
+                    "proof": "0.2",
+                    "claim": {
+                        "subject": "Acme Corp",
+                        "predicate": "reported_net_income",
+                        "object": "USD 42,000,000"
+                    },
+                    "evidence": ["<Evidence A>", "<Evidence B>", "<Evidence C>"],
+                    "attestations": [{"algorithm": "Ed25519", "signature": "..."}],
+                    "status": "CONTESTED",
+                    "id": "sha256:11111111..."
+                }
+            },
+            "claim_2": {
+                title: "CLAIM 2 (SUPERSEDED)",
+                desc: "A contradictory claim that disputed Claim 1. It was eventually superseded by a final audit.",
+                json: {
+                    "proof": "0.2",
+                    "claim": {
+                        "subject": "Acme Corp",
+                        "predicate": "reported_net_income",
+                        "object": "USD 38,000,000"
+                    },
+                    "evidence": [{"type": "document", "title": "Amended 10-K"}],
+                    "attestations": [{"algorithm": "Ed25519", "signature": "..."}],
+                    "status": "SUPERSEDED",
+                    "id": "sha256:22222222..."
+                }
+            },
+            "claim_3": {
+                title: "CLAIM 3 (VERIFIED)",
+                desc: "The final authoritative claim, superseding Claim 2. Notice how all history remains intact.",
+                json: {
+                    "proof": "0.2",
+                    "claim": {
+                        "subject": "Acme Corp",
+                        "predicate": "reported_net_income",
+                        "object": "USD 38,500,000"
+                    },
+                    "evidence": [{"type": "document", "title": "Final Auditor Signoff"}],
+                    "attestations": [{"algorithm": "Ed25519", "signature": "..."}],
+                    "status": "VERIFIED",
+                    "id": "sha256:33333333..."
+                }
+            }
+        };
+
+        function showDetails(nodeId) {
+            const data = mockData[nodeId];
+            if (!data) return;
+            
+            document.getElementById('panel').style.display = 'block';
+            document.getElementById('panel-title').innerText = data.title;
+            document.getElementById('panel-desc').innerText = data.desc;
+            document.getElementById('panel-json').innerText = JSON.stringify(data.json, null, 2);
+        }
+    </script>
+</body>
+</html>
